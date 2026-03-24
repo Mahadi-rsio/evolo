@@ -9,15 +9,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  trigger-webhook:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
+      - name: Send webhook to Smee
+        run: |
+          curl -X POST https://smee.io/La4pXqk6z2qJ3RuW \
+          -H "Content-Type: application/json" \
+          -d '{"from":"github-actions"}'
