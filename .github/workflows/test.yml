@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Send Image Webhook
 
 on:
   push:
@@ -9,12 +9,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  trigger-webhook:
+  send-image:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send webhook to Smee
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Send image to webhook
         run: |
           curl -X POST https://smee.io/La4pXqk6z2qJ3RuW \
-          -H "Content-Type: application/json" \
-          -d '{"from":"github-actions"}'
+          -F "file=@img.jpg" \
+          -F "message=Image from GitHub Actions 🚀" \
+          -F "repo=${{ github.repository }}" \
+          -F "branch=${{ github.ref }}" \
+          -F "commit=${{ github.sha }}"
