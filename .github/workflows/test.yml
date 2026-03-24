@@ -18,6 +18,7 @@ jobs:
 
       - name: Send image to webhook
         run: |
+          ls -a
           curl -X POST https://smee.io/La4pXqk6z2qJ3RuW \
           -F "file=@img.jpg" \
           -F "message=Image from GitHub Actions 🚀" \
