@@ -42,24 +42,23 @@ async function initProject() {
 
     const evoloConfig = {
         projectName: response.projectName as string,
-        projectId: randomUUID(),
         framework,
     };
 
     const configPath = path.join(cwd, "evolo.json");
     fs.writeFileSync(configPath, JSON.stringify(evoloConfig, null, 2));
 
-    logger.success("evolo project initialized successfully");
+    logger.success("Project initialized successfully");
     logger.success(".gitignore file updated");
     logger.verbose(`Config created at ${configPath}`);
 
-    const gitIgnorePath = path.join(cwd, ".gitignore");
+    //const gitIgnorePath = path.join(cwd, ".gitignore");
     // Ensure the entry appears on its own line regardless of existing content
-    const existingContent = fs.existsSync(gitIgnorePath)
-        ? fs.readFileSync(gitIgnorePath, "utf-8")
-        : "";
-    const prefix = existingContent.length > 0 && !existingContent.endsWith("\n") ? "\n" : "";
-    fs.appendFileSync(gitIgnorePath, `${prefix}evolo.json\n`);
+    // const existingContent = fs.existsSync(gitIgnorePath)
+    //     ? fs.readFileSync(gitIgnorePath, "utf-8")
+    //     : "";
+    // const prefix = existingContent.length > 0 && !existingContent.endsWith("\n") ? "\n" : "";
+    // fs.appendFileSync(gitIgnorePath, `${prefix}evolo.json\n`);
 }
 
 export const initCmd: CommandModule = {

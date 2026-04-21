@@ -21,4 +21,5 @@ export const commands: CommandModule[] = [
     listCmd,
     logsCmd as CommandModule,
     envCmd,
+
 ];
