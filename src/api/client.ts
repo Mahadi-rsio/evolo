@@ -1,7 +1,7 @@
 import axios, { type AxiosInstance, type AxiosError } from "axios";
 import { config } from "../config.js";
-import { getToken } from "../utils/session.js";
 import { NetworkError, AuthError } from "../utils/errors.js";
+import { jwtToken } from "../utils/jwt.js";
 
 // ---------------------------------------------------------------------------
 // Shared axios instance
@@ -16,8 +16,10 @@ export function createApiClient(): AxiosInstance {
     });
 
     // Inject auth token on every request
-    instance.interceptors.request.use((reqConfig) => {
-        const token = getToken();
+    instance.interceptors.request.use(async (reqConfig) => {
+        const token = await jwtToken()
+        console.log(token);
+
         if (token) {
             reqConfig.headers = reqConfig.headers ?? {};
             reqConfig.headers["Authorization"] = `Bearer ${token}`;
@@ -31,7 +33,7 @@ export function createApiClient(): AxiosInstance {
         (err: AxiosError) => {
             if (err.response?.status === 401 || err.response?.status === 403) {
                 return Promise.reject(
-                    new AuthError("Session expired or invalid. Please run `evolo login`."),
+                    new AuthError("Session expired or invalid. Please run `evolo login`." + err),
                 );
             }
             const message = err.response

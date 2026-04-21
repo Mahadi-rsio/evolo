@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 import type { CommandModule } from "yargs";
 import prompts from "prompts";
-import { randomUUID } from "crypto";
 import { detectFramework } from "../utils/frameworkDetector.js";
 import { logger } from "../utils/logger.js";
 import { handleError, ConfigError } from "../utils/errors.js";
@@ -41,7 +40,7 @@ async function initProject() {
     }
 
     const evoloConfig = {
-        projectName: response.projectName as string,
+        project_name: response.projectName as string,
         framework,
     };
 

@@ -17,7 +17,7 @@ export interface JobStatus {
  */
 export async function uploadBundle(
     zipPath: string,
-    projectId: string,
+    project_name: string,
 ): Promise<UploadResponse> {
     const { size } = fs.statSync(zipPath);
     const form = new FormData();
@@ -26,9 +26,11 @@ export async function uploadBundle(
         contentType: "application/zip",
         knownLength: size,
     });
-    form.append("projectId", projectId);
+    form.append("project_name", project_name);
+    form.append("tenant_name", "mahadi")
+    form.append("plan", "free")
 
-    const response = await apiClient.post<UploadResponse>("/upload/hello", form, {
+    const response = await apiClient.post<UploadResponse>(`/upload/${project_name}`, form, {
         headers: form.getHeaders(),
     });
 

@@ -17,14 +17,14 @@ export const deployCmd: CommandModule = {
             await runBuild("./");
 
             // Read project ID from evolo.json if available
-            let projectId: string | undefined;
+            let project_name: string | undefined;
             const cfgPath = path.join(process.cwd(), "evolo.json");
             if (fs.existsSync(cfgPath)) {
-                const cfg = JSON.parse(fs.readFileSync(cfgPath, "utf-8")) as { projectId?: string };
-                projectId = cfg.projectId;
+                const cfg = JSON.parse(fs.readFileSync(cfgPath, "utf-8")) as { project_name?: string };
+                project_name = cfg.project_name;
             }
 
-            await deploy("./", projectId);
+            await deploy("./", project_name);
         } catch (err) {
             handleError(err);
         }

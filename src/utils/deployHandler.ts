@@ -46,7 +46,7 @@ async function pollJobStatus(jobId: string): Promise<void> {
     spinner.fail("Timed out waiting for deployment to complete.");
 }
 
-export async function deploy(projectPath: string, projectId = "unknown") {
+export async function deploy(projectPath: string, project_name = "unknown") {
     const buildPath = config.BUILD_DIRS
         .map((d) => path.join(projectPath, d))
         .find((p) => fs.existsSync(p));
@@ -76,7 +76,7 @@ export async function deploy(projectPath: string, projectId = "unknown") {
     const uploadSpinner = logger.spinner("Uploading to cloud...").start();
     let jobId: string;
     try {
-        const result = await uploadBundle(tmpZip, projectId);
+        const result = await uploadBundle(tmpZip, project_name);
         jobId = result.jobId;
         uploadSpinner.succeed(`Uploaded! Job ID: ${jobId}`);
     } catch (err: unknown) {

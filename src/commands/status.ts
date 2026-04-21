@@ -27,6 +27,7 @@ async function statusCommand() {
 
     logger.success(`Logged in as ${sessionData.user.name} (${sessionData.user.email})`);
     logger.verbose(`Token: ${jwtData?.token ?? "(unavailable)"}`);
+    console.log(jwtData.token)
 }
 
 export const statusCmd: CommandModule = {
