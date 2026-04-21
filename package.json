@@ -1,12 +1,32 @@
 {
   "name": "evolo",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "CLI tool to deploy web projects to the Evolo cloud platform",
+  "main": "dist/index.js",
+  "bin": {
+    "evolo": "./dist/index.js"
   },
-  "keywords": [],
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "cli",
+    "deploy",
+    "evolo",
+    "cloud"
+  ],
   "author": "",
   "license": "ISC",
   "type": "module",
@@ -29,7 +49,11 @@
     "@types/node": "^25.3.3",
     "@types/prompts": "^2.4.9",
     "@types/yargs": "^17.0.35",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "esbuild": "^0.27.3",
-    "typescript": "^5.9.3"
+    "eslint": "^9.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.0"
   }
 }

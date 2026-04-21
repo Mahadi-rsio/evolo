@@ -1,15 +1,23 @@
-import { deviceLogin } from "./../auth/deviceAuth.js";
+import type { CommandModule } from "yargs";
+import { deviceLogin } from "../auth/deviceAuth.js";
 import { saveToken } from "../utils/session.js";
-import chalk from "chalk";
+import { logger } from "../utils/logger.js";
+import { handleError } from "../utils/errors.js";
 
-export async function loginCommand() {
+async function loginCommand() {
     try {
         const token = await deviceLogin();
-
         saveToken(token);
-
-        console.log(chalk.green("\nLogin successful!"));
+        logger.success("Login successful!");
     } catch (err) {
-        console.error(chalk.red("Login failed"));
+        handleError(err);
     }
 }
+
+export const loginCmd: CommandModule = {
+    command: "login",
+    describe: "Login to your Evolo account",
+    handler: async () => {
+        await loginCommand();
+    },
+};

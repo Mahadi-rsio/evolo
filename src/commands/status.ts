@@ -1,33 +1,42 @@
-import ora from "ora";
+import type { CommandModule } from "yargs";
 import { authClient } from "../auth/deviceAuth.js";
 import { getToken } from "../utils/session.js";
+import { logger } from "../utils/logger.js";
+import { handleError, AuthError } from "../utils/errors.js";
 
+async function statusCommand() {
+    const spinner = logger.spinner("Checking account status...").start();
 
-
-export async function status() {
-    const spinner = ora().start()
-    const { data, error } = await authClient.getSession({
+    const { data: sessionData, error: sessionError } = await authClient.getSession({
         fetchOptions: {
-            headers: {
-                Authorization: `Bearer ${getToken()}`
-            }
-        }
-    })
+            headers: { Authorization: `Bearer ${getToken()}` },
+        },
+    });
 
-    const jwtToken = await authClient.token({
+    const { data: jwtData, error: jwtError } = await authClient.token({
         fetchOptions: {
-            headers: {
-                Authorization: `Bearer ${getToken()}`
-            }
-        }
-    })
+            headers: { Authorization: `Bearer ${getToken()}` },
+        },
+    });
 
+    spinner.stop();
 
-    if (error && jwtToken.error) {
-        console.log("Something went wrong " + error.message);
-        return
+    if (sessionError || jwtError || !sessionData) {
+        throw new AuthError("Could not retrieve session. Please run `evolo login`.");
     }
-    spinner.stop()
-    console.log("You are logged in as " + data?.user.name + "\n your token is " + jwtToken.data?.token);
 
+    logger.success(`Logged in as ${sessionData.user.name} (${sessionData.user.email})`);
+    logger.verbose(`Token: ${jwtData?.token ?? "(unavailable)"}`);
 }
+
+export const statusCmd: CommandModule = {
+    command: "status",
+    describe: "Check your account login status",
+    handler: async () => {
+        try {
+            await statusCommand();
+        } catch (err) {
+            handleError(err);
+        }
+    },
+};

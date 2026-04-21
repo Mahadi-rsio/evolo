@@ -1,7 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import ora from 'ora';
-import chalk from 'chalk';
+import fs from "fs";
+import path from "path";
+import { logger } from "./logger.js";
 
 export type FrameworkCategory = 'Frontend' | 'Backend' | 'Fullstack' | 'Other';
 
@@ -17,7 +16,7 @@ export interface Framework {
  * @returns Detected frameworks categorized
  */
 export async function detectFramework(projectPath: string): Promise<Record<FrameworkCategory, string[]>> {
-    const spinner = ora('Detecting frameworks...').start();
+    const spinner = logger.spinner("Detecting frameworks...").start();
 
     const pkgPath = path.join(projectPath, 'package.json');
     let deps: Record<string, string> = {};
@@ -72,20 +71,20 @@ export async function detectFramework(projectPath: string): Promise<Record<Frame
             detected.Other.push('Python Project');
         }
 
-        spinner.succeed(chalk.green('Framework detection complete!'));
+        spinner.succeed("Framework detection complete!");
 
         // Log only categories with detected frameworks
         Object.entries(detected).forEach(([category, list]) => {
             if (list.length > 0) {
-                console.log(`${chalk.blue.bold(category)}: ${chalk.yellow(list[0])}`);
+                logger.info(`${category}: ${list[0]}`);
             }
         });
 
         return detected;
 
     } catch (err) {
-        spinner.fail(chalk.red('Error detecting frameworks'));
-        console.error(chalk.red(err));
+        spinner.fail("Error detecting frameworks");
+        logger.error(String(err));
         return {
             Frontend: [],
             Backend: [],

@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import { spawn } from 'child_process';
-import chalk from 'chalk';
+import fs from "fs";
+import path from "path";
+import { spawn } from "child_process";
+import { logger } from "./logger.js";
 
 /**
  * Run the build script from package.json with spinner and full logs
@@ -26,11 +26,10 @@ export function runBuild(projectPath: string): Promise<void> {
 
 
             if (code === 0) {
-                console.log(chalk.green(`✅ Deploying for production`));
-
+                logger.success("Build complete – deploying for production");
                 resolve();
             } else {
-                console.log(chalk.red(`❌ Build failed with code ${code}`));
+                logger.error(`Build failed with code ${code}`);
                 reject(new Error(`Build failed with code ${code}`));
             }
         });
