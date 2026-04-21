@@ -14,11 +14,20 @@ export async function status() {
         }
     })
 
-    if (error) {
+    const jwtToken = await authClient.token({
+        fetchOptions: {
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
+        }
+    })
+
+
+    if (error && jwtToken.error) {
         console.log("Something went wrong " + error.message);
         return
     }
     spinner.stop()
-    console.log("You are logged in as " + data?.user.name);
+    console.log("You are logged in as " + data?.user.name + "\n your token is " + jwtToken.data?.token);
 
 }

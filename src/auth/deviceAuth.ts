@@ -4,10 +4,14 @@ import open from "open";
 import ora from "ora";
 import chalk from "chalk";
 import { saveToken } from "../utils/session.js";
+import { jwtClient } from 'better-auth/client/plugins'
 
 export const authClient = createAuthClient({
-    baseURL: "http://localhost:3000",
-    plugins: [deviceAuthorizationClient()],
+    baseURL: "https://cloudisy.vercel.app",
+    plugins: [
+        deviceAuthorizationClient(),
+        jwtClient()
+    ],
 });
 
 export async function deviceLogin() {
