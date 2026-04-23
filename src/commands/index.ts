@@ -5,8 +5,6 @@ import { initCmd } from "./initProject.js";
 import { statusCmd } from "./status.js";
 import { deployCmd } from "./deploy.js";
 import { listCmd } from "./list.js";
-import { logsCmd } from "./logs.js";
-import { envCmd } from "./env.js";
 
 /**
  * Central command registry.
@@ -19,7 +17,5 @@ export const commands: CommandModule[] = [
     statusCmd,
     deployCmd,
     listCmd,
-    logsCmd as CommandModule,
-    envCmd,
 
 ];

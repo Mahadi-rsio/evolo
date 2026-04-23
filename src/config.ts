@@ -5,7 +5,7 @@
 
 export const config = {
     /** Base URL for the Evolo API. Override with EVOLO_API_URL env var. */
-    API_BASE_URL: process.env["EVOLO_API_URL"] ?? "http://localhost:3000",
+    API_BASE_URL: process.env["EVOLO_API_URL"] ?? "https://api.cloudisy.top",
 
     /** Base URL for the auth server. Override with EVOLO_AUTH_URL env var. */
     AUTH_BASE_URL: process.env["EVOLO_AUTH_URL"] ?? "https://cloudisy.vercel.app",

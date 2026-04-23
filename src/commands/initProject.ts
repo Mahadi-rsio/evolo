@@ -8,6 +8,7 @@ import { handleError, ConfigError } from "../utils/errors.js";
 import { apiClient } from "../api/client.js";
 import { authClient } from "../auth/deviceAuth.js";
 import { getToken } from "../utils/session.js";
+import { listPages, type Pages } from "../api/projectApi.js";
 
 interface CreateProjectResponse {
     id: string;
@@ -47,7 +48,60 @@ async function initProject() {
     }
 
     if (mode === "existing") {
-        logger.info("Linking to an existing project — coming soon.");
+        logger.info("Fetching your projects...");
+
+        const projects: Pages[] = await listPages();
+
+        if (!projects || projects.length === 0) {
+            logger.warn("No existing projects found. Create one with: evolo init → Create a new project");
+            return;
+        }
+
+        const { selectedProject } = await prompts({
+            type: "select",
+            name: "selectedProject",
+            message: "Select a project to link",
+            choices: projects.map((p) => ({
+                title: `${p.project_name}  (${p.domain})`,
+                value: p,
+            })),
+        });
+
+        if (!selectedProject) {
+            logger.warn("Linking cancelled.");
+            return;
+        }
+
+        const detected = await detectFramework(cwd);
+        const frameworks = Object.values(detected).flat();
+        const framework = frameworks[0] ?? "unknown";
+
+        const evoloConfig = {
+            id: selectedProject.id,
+            project_name: selectedProject.project_name,
+            domain: selectedProject.domain,
+            framework,
+            created_at: selectedProject.createdAt,
+        };
+
+        const configPath = path.join(cwd, "evolo.json");
+        fs.writeFileSync(configPath, JSON.stringify(evoloConfig, null, 2));
+
+        // const gitIgnorePath = path.join(cwd, ".gitignore");
+        // const existingContent = fs.existsSync(gitIgnorePath)
+        //     ? fs.readFileSync(gitIgnorePath, "utf-8")
+        //     : "";
+        //
+        // if (!existingContent.includes("evolo.json")) {
+        //     const prefix =
+        //         existingContent.length > 0 && !existingContent.endsWith("\n") ? "\n" : "";
+        //     fs.appendFileSync(gitIgnorePath, `${prefix}\nevolo.json\n`);
+        //     logger.success(".gitignore file updated");
+        // }
+        //
+        logger.success(`Linked to project "${selectedProject.project_name}"`);
+        logger.success(`Domain: ${selectedProject.domain}`);
+        logger.verbose(`Config written at ${configPath}`);
         return;
     }
 
@@ -81,9 +135,8 @@ async function initProject() {
     });
 
     if (sessionError) {
-        console.log("You are not logged in")
+        console.log("You are not logged in");
     }
-
 
     // Create project via API
     logger.info("Creating project...");

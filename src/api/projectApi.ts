@@ -1,12 +1,20 @@
 import { apiClient } from "./client.js";
 
-export interface Project {
+
+export interface Pages {
     id: string;
-    name: string;
-    framework: string;
-    url?: string;
+    tenant_id: string;
+    tenant_name: string;
+    plan: string;
+    domain: string;
+    project_name: string;
+    request: number;
+    request_limit: number;
+    bandwidth_usage: number;
+    bandwidth_limit: number;
     createdAt: string;
 }
+
 
 export interface EnvVar {
     key: string;
@@ -22,37 +30,8 @@ export interface DeploymentLog {
 /**
  * List all projects belonging to the authenticated user.
  */
-export async function listProjects(): Promise<Project[]> {
-    const response = await apiClient.get<Project[]>("/projects");
+export async function listPages(): Promise<Pages[]> {
+    const response = await apiClient.get<Pages[]>("/api/pages");
     return response.data;
 }
 
-/**
- * Fetch deployment logs for a project.
- */
-export async function getProjectLogs(projectId: string): Promise<DeploymentLog[]> {
-    const response = await apiClient.get<DeploymentLog[]>(`/projects/${projectId}/logs`);
-    return response.data;
-}
-
-/**
- * List env vars for a project.
- */
-export async function listEnvVars(projectId: string): Promise<EnvVar[]> {
-    const response = await apiClient.get<EnvVar[]>(`/projects/${projectId}/env`);
-    return response.data;
-}
-
-/**
- * Set an env var for a project.
- */
-export async function setEnvVar(projectId: string, key: string, value: string): Promise<void> {
-    await apiClient.post(`/projects/${projectId}/env`, { key, value });
-}
-
-/**
- * Delete an env var from a project.
- */
-export async function deleteEnvVar(projectId: string, key: string): Promise<void> {
-    await apiClient.delete(`/projects/${projectId}/env/${key}`);
-}
