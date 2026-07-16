@@ -1,24 +1,25 @@
 import { createAuthClient } from "better-auth/client";
 import { deviceAuthorizationClient } from "better-auth/client/plugins";
 import open from "open";
-import ora from "ora";
 import chalk from "chalk";
 import { saveToken } from "../utils/session.js";
-import { jwtClient } from 'better-auth/client/plugins'
+import { jwtClient } from "better-auth/client/plugins";
+import { config } from "../config.js";
+import { logger } from "../utils/logger.js";
 
 export const authClient = createAuthClient({
-    baseURL: "https://cloudisy.vercel.app",
+    baseURL: config.AUTH_BASE_URL,
     plugins: [
         deviceAuthorizationClient(),
-        jwtClient()
+        jwtClient(),
     ],
 });
 
 export async function deviceLogin() {
-    const spinner = ora("Requesting device authorization").start();
+    const spinner = logger.spinner("Requesting device authorization").start();
 
     const { data, error } = await authClient.device.code({
-        client_id: "demo-cli",
+        client_id: config.CLIENT_ID,
         scope: "openid profile email",
     });
 
@@ -47,7 +48,7 @@ export async function deviceLogin() {
 }
 
 async function pollForToken(deviceCode: string, interval: number) {
-    const spinner = ora("Waiting for authorization").start();
+    const spinner = logger.spinner("Waiting for authorization").start();
 
     let pollingInterval = interval;
 
@@ -56,7 +57,7 @@ async function pollForToken(deviceCode: string, interval: number) {
             const { data, error } = await authClient.device.token({
                 grant_type: "urn:ietf:params:oauth:grant-type:device_code",
                 device_code: deviceCode,
-                client_id: "demo-cli",
+                client_id: config.CLIENT_ID,
             });
 
 

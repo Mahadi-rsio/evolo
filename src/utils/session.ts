@@ -1,9 +1,10 @@
 import fs from "fs";
-import path from "path";
-import os from "os";
 import { authClient } from "../auth/deviceAuth.js";
+import { config } from "../config.js";
+import { AuthError } from "./errors.js";
+import { logger } from "./logger.js";
 
-const sessionFile = path.join(os.homedir(), "evolo.session.json");
+const sessionFile = config.SESSION_FILE_PATH;
 
 export function saveToken(token: string) {
     fs.writeFileSync(sessionFile, JSON.stringify({
@@ -29,21 +30,19 @@ export async function checkStatus() {
     const { data, error } = await authClient.getSession({
         fetchOptions: {
             headers: {
-                Authorization: `Bearer ${getToken()}`
-            }
-        }
-    })
+                Authorization: `Bearer ${getToken()}`,
+            },
+        },
+    });
 
-    if (error) {
-        console.log("You are not logged in")
-        process.exit(process.exitCode)
+    if (error || !data) {
+        throw new AuthError("You are not logged in. Please run `evolo login`.");
     }
 
-    console.log("Deploy started for " + data?.user.id + ": " + data?.user.name);
-
+    logger.info(`Deploy started for ${data.user.id}: ${data.user.name}`);
 
     return {
         valid: true,
-        uid: data?.user.id
-    }
+        uid: data.user.id,
+    };
 }
