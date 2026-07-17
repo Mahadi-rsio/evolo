@@ -5,13 +5,13 @@
 
 export const config = {
     /** Base URL for the Evolo API. Override with EVOLO_API_URL env var. */
-    API_BASE_URL: process.env["EVOLO_API_URL"] ?? "https://api.cloudisy.top",
+    API_BASE_URL: process.env["EVOLO_API_URL"] ?? "http://localhost:3000",
 
     /** Base URL for the auth server. Override with EVOLO_AUTH_URL env var. */
-    AUTH_BASE_URL: process.env["EVOLO_AUTH_URL"] ?? "https://cloudisy.vercel.app",
+    AUTH_BASE_URL: process.env["EVOLO_AUTH_URL"] ?? "https://auth.cloudisy.com",
 
     /** OAuth client ID used in the device-flow auth. */
-    CLIENT_ID: process.env["EVOLO_CLIENT_ID"] ?? "demo-cli",
+    CLIENT_ID: process.env["EVOLO_CLIENT_ID"] ?? "evolo",
 
     /** Absolute path to the local session file that stores the access token. */
     SESSION_FILE_PATH: `${process.env["HOME"] ?? process.env["USERPROFILE"] ?? "~"}/evolo.session.json`,
