@@ -1,11 +1,26 @@
 import axios, { type AxiosInstance, type AxiosError } from "axios";
 import { config } from "../config.js";
-import { NetworkError, AuthError } from "../utils/errors.js";
+import { NetworkError, AuthError, ConfigError } from "../utils/errors.js";
 import { jwtToken } from "../utils/jwt.js";
 
 // ---------------------------------------------------------------------------
 // Shared axios instance
 // ---------------------------------------------------------------------------
+
+/** Pull a human-readable error string from common API error body shapes. */
+function extractApiErrorMessage(data: unknown, status: number): string {
+    if (typeof data === "string" && data.trim()) return data.trim();
+
+    if (data && typeof data === "object") {
+        const obj = data as Record<string, unknown>;
+        for (const key of ["error", "message", "detail"] as const) {
+            const val = obj[key];
+            if (typeof val === "string" && val.trim()) return val.trim();
+        }
+    }
+
+    return `HTTP ${status}: ${JSON.stringify(data)}`;
+}
 
 export function createApiClient(): AxiosInstance {
     const instance = axios.create({
@@ -17,7 +32,7 @@ export function createApiClient(): AxiosInstance {
 
     // Inject auth token on every request
     instance.interceptors.request.use(async (reqConfig) => {
-        const token = await jwtToken()
+        const token = await jwtToken();
         console.log(token);
 
         if (token) {
@@ -31,14 +46,30 @@ export function createApiClient(): AxiosInstance {
     instance.interceptors.response.use(
         (res) => res,
         (err: AxiosError) => {
-            if (err.response?.status === 401 || err.response?.status === 403) {
+            const status = err.response?.status;
+            const data = err.response?.data;
+            const message = status
+                ? extractApiErrorMessage(data, status)
+                : err.message;
+
+            if (status === 401 || status === 403) {
                 return Promise.reject(
-                    new AuthError("Session expired or invalid. Please run `evolo login`." + err),
+                    new AuthError(
+                        status === 403
+                            ? message || "Forbidden. Check that you own this project."
+                            : "Session expired or invalid. Please run `evolo login`.",
+                    ),
                 );
             }
-            const message = err.response
-                ? `HTTP ${err.response.status}: ${JSON.stringify(err.response.data)}`
-                : err.message;
+
+            if (status === 400) {
+                return Promise.reject(new ConfigError(message));
+            }
+
+            if (status === 404) {
+                return Promise.reject(new ConfigError(message || "Resource not found."));
+            }
+
             return Promise.reject(new NetworkError(message));
         },
     );

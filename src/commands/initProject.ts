@@ -128,25 +128,22 @@ async function initProject() {
         return;
     }
 
-    const { data: sessionData, error: sessionError } = await authClient.getSession({
+    const { error: sessionError } = await authClient.getSession({
         fetchOptions: {
             headers: { Authorization: `Bearer ${getToken()}` },
         },
     });
 
     if (sessionError) {
-        console.log("You are not logged in");
+        throw new ConfigError("You are not logged in. Please run `evolo login`.");
     }
 
     // Create project via API
     logger.info("Creating project...");
+    // POST /api/pages/create — body is { project_name } only; tenant comes from JWT
     const { data } = await apiClient.post<CreateProjectResponse>(
         "/api/pages/create",
-        {
-            tenant_name: sessionData?.user.name,
-            project_name: response.projectName as string,
-            plan: "free",
-        },
+        { project_name: response.projectName as string },
     );
 
     const evoloConfig = {
