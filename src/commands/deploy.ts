@@ -2,8 +2,6 @@ import fs from "fs";
 import path from "path";
 import type { CommandModule } from "yargs";
 import { checkStatus } from "../utils/session.js";
-import { detectFramework } from "../utils/frameworkDetector.js";
-import { runBuild } from "../utils/buildHandler.js";
 import { deploy } from "../utils/deployHandler.js";
 import { handleError, ConfigError } from "../utils/errors.js";
 
@@ -33,13 +31,10 @@ function resolvePageId(cwd: string): string {
 export const deployCmd: CommandModule = {
     command: "deploy",
     describe:
-        "Build and deploy to the cloud (uploads originals; server optimizes assets at commit)",
+        "Deploy an existing build to the cloud (uploads originals; server optimizes assets at commit)",
     handler: async () => {
         try {
             await checkStatus();
-            await detectFramework("./");
-            await runBuild("./");
-
             const pageId = resolvePageId(process.cwd());
             await deploy("./", pageId);
         } catch (err) {

@@ -38,7 +38,7 @@ evolo deploy
 | `evolo logout` | Clear the saved session |
 | `evolo status` | Show the current login status |
 | `evolo init` | Create a new project or link an existing one (`evolo.json`) |
-| `evolo deploy` | Build and deploy (uploads originals; server optimizes at commit) |
+| `evolo deploy` | Deploy existing build output (uploads originals; server optimizes at commit) |
 | `evolo pages` | List projects on your account |
 
 ### Global options
@@ -54,7 +54,7 @@ evolo deploy
 
 1. **Login** — Device-flow auth; the session token is stored in `~/evolo.session.json`.
 2. **Init** — Detects the framework, then either creates a project via the API or links an existing one. Writes `evolo.json` in the project root (and adds it to `.gitignore` when creating a new project).
-3. **Deploy** — Requires login, detects the framework, runs the project’s `build` script, validates the manifest locally (≤100 files, ≤50 MB/file, ≤250 MB total), then **prepare → presign → PUT originals → commit**. The CLI uploads original files only; Brotli/Gzip and WebP run on the server at commit. Build output is taken from `dist`, `build`, `.next`, or `out`.
+3. **Deploy** — Requires login, finds an existing build folder (`dist`, `build`, `.next`, or `out`), validates the manifest locally (≤100 files, ≤50 MB/file, ≤250 MB total), then **prepare → presign → PUT originals → commit**. Does **not** run a local build — build the app yourself first. The CLI uploads original files only; Brotli/Gzip and WebP run on the server at commit.
 
 ## Configuration
 
